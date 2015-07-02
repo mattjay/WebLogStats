@@ -29,6 +29,7 @@ import time
 import datetime
 import optparse
 from collections import Counter
+from ascii_graph import Pyasciigraph
 
 __version__ = '1.0.1'
 __author__ = 'Matt Johansen <@mattjay>'
@@ -51,6 +52,7 @@ d2 = datetime.datetime(*t2[:6])
 
 requests = []
 ips = Counter()
+graph = Pyasciigraph()
 
 for f in filenames:
 	with open(f) as fi:
@@ -69,3 +71,5 @@ if opts.bool == True:
 	print "Unique Ips Since", d2, "                :   ", ips.keys()
 if opts.ips > 0:
 	print "Top", opts.ips, "Visitor(s) :", ips.most_common(opts.ips)
+	for line in graph.graph("Most Common Ips", ips.most_common(opts.ips)):
+		print line
