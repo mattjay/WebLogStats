@@ -7,8 +7,9 @@ Options:
 -h, --help  show this help message and exit
 -i, --ips   shows list of unique IPs
 -t HOURS    number of hours back you want to look
+-n IPS      List the n most common IPs to visit in the given time period
 ```
 
 Usage Example:
 ```
-python apacheCounter.py -i -t 48 < apache.log
+python apacheCounter.py -i -t 48 -n 10 < apache.log
