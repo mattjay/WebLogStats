@@ -29,7 +29,6 @@ import time
 import datetime
 import optparse
 from collections import Counter
-from ascii_graph import Pyasciigraph
 
 __version__ = '1.0.1'
 __author__ = 'Matt Johansen <@mattjay>'
@@ -37,8 +36,8 @@ __license__ = 'MIT'
 
 desc = "Python script to parse through an Apache log file and return the number of requests and unique IPs in a given time period. It takes an Apache log file via stdin, the number of hours back you'd like to look -t (Default = 24 hours), and if you want the actual list of unique IPs -i"
 parser = optparse.OptionParser(description=desc)
-parser.add_option('-i', '--ips', help='shows list of unique IPs', dest='bool', default=False, action='store_true')
 parser.add_option('-t', help='number of hours back you want to look', dest='hours', default=24, type=int, action='store')
+parser.add_option('-i', '--ips', help='shows list of unique IPs', dest='bool', default=False, action='store_true')
 parser.add_option('-n', help='List the n most common IPs to visit in the given time period', dest='ips', default=0, type=int, action='store')
 parser.add_option('-f', '--files', help='list of apache log file paths', dest='files', type='string', action='store')
 (opts, args) = parser.parse_args()
@@ -52,7 +51,6 @@ d2 = datetime.datetime(*t2[:6])
 
 requests = []
 ips = Counter()
-graph = Pyasciigraph()
 
 for f in filenames:
 	with open(f) as fi:
@@ -65,11 +63,23 @@ for f in filenames:
 					requests.append(d1)
 					ips[m[0]] += 1
 
+try:
+	from pyfiglet import Figlet
+	fig = Figlet()
+	print(fig.renderText("Apache Log Counter"))
+except ImportError:
+	print "Install pyfiglet for a (useless) pretty cool header!"
+
 print "Total Unique IP Addresses Since", d2, " :   ", len(ips)
 print "Total Requests Since", d2, "            :   ", len(requests)
 if opts.bool == True:
 	print "Unique Ips Since", d2, "                :   ", ips.keys()
 if opts.ips > 0:
 	print "Top", opts.ips, "Visitor(s) :", ips.most_common(opts.ips)
-	for line in graph.graph("Most Common Ips", ips.most_common(opts.ips)):
-		print line
+	try:
+		from ascii_graph import Pyasciigraph
+		graph = Pyasciigraph()
+		for line in graph.graph("Most Common Ips", ips.most_common(opts.ips)):
+			print line
+	except ImportError:
+		print "Install ascii_graph for a cool graph!"
