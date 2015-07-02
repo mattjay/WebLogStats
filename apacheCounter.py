@@ -27,6 +27,7 @@ import re
 import time
 import datetime
 import optparse
+from collections import Counter
 
 __version__ = '1.0.1'
 __author__ = 'Matt Johansen <@mattjay>'
@@ -36,6 +37,7 @@ desc = "Python script to parse through an Apache log file and return the number 
 parser = optparse.OptionParser(description=desc)
 parser.add_option('-i', '--ips', help='shows list of unique IPs', dest='bool', default=False, action='store_true')
 parser.add_option('-t', help='number of hours back you want to look', dest='hours', default=24, type=int, action='store')
+parser.add_option('-n', help='List the n most common IPs to visit in the given time period', dest='ips', default=0, type=int, action='store')
 (opts, args) = parser.parse_args()
 
 apacheLog = sys.stdin
@@ -46,7 +48,7 @@ t2 = time.strptime(apacheHoursAgo.split()[0], '%d/%b/%Y:%H:%M:%S')
 d2 = datetime.datetime(*t2[:6])
 
 requests = []
-ips = []
+ips = Counter()
 
 for line in apacheLog:
 	m = map(''.join, re.findall(r'\"(.*?)\"|\[(.*?)\]|(\S+)', line))
@@ -55,11 +57,12 @@ for line in apacheLog:
 		d1 = datetime.datetime(*t1[:6])
 		if d1 > d2:
 			requests.append(d1)
-			ips.append(m[0])
-
-ips = sorted(set(ips))
+			#ips.append(m[0])
+			ips[m[0]] += 1
 
 print "Total Unique IP Addresses Since", d2, " :   ", len(ips)
 print "Total Requests Since", d2, "            :   ", len(requests)
 if opts.bool == True:
-	print "Unique Ips Since", d2, "                :   ", ips
+	print "Unique Ips Since", d2, "                :   ", ips.keys()
+if opts.ips > 0:
+	print "Top", opts.ips, "Visitor(s) :", ips.most_common(opts.ips)
