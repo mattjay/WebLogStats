@@ -45,7 +45,6 @@ apacheHoursAgo = hoursAgo.strftime('%d/%b/%Y:%H:%M:%S')
 t2 = time.strptime(apacheHoursAgo.split()[0], '%d/%b/%Y:%H:%M:%S')
 d2 = datetime.datetime(*t2[:6])
 
-regex = '([(\d\.)]+) - - \[(.*?)\] "(.*?)" (\d+) - "(.*?)" "(.*?)"'
 requests = []
 ips = []
 
