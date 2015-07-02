@@ -23,6 +23,7 @@
 """Python script to parse through an Apache log file and return the number of requests and unique IPs in a given time period"""
 
 import sys
+import fileinput
 import re
 import time
 import datetime
@@ -38,9 +39,10 @@ parser = optparse.OptionParser(description=desc)
 parser.add_option('-i', '--ips', help='shows list of unique IPs', dest='bool', default=False, action='store_true')
 parser.add_option('-t', help='number of hours back you want to look', dest='hours', default=24, type=int, action='store')
 parser.add_option('-n', help='List the n most common IPs to visit in the given time period', dest='ips', default=0, type=int, action='store')
+parser.add_option('-f', '--files', help='list of apache log file paths', dest='files', type='string', action='store')
 (opts, args) = parser.parse_args()
 
-apacheLog = sys.stdin
+filenames = [x.strip() for x in opts.files.split(',')]
 
 hoursAgo = datetime.datetime.today() - datetime.timedelta(hours = opts.hours)
 apacheHoursAgo = hoursAgo.strftime('%d/%b/%Y:%H:%M:%S')
@@ -50,15 +52,16 @@ d2 = datetime.datetime(*t2[:6])
 requests = []
 ips = Counter()
 
-for line in apacheLog:
-	m = map(''.join, re.findall(r'\"(.*?)\"|\[(.*?)\]|(\S+)', line))
-	if m != None:
-		t1 = time.strptime(m[3].split()[0], '%d/%b/%Y:%H:%M:%S')
-		d1 = datetime.datetime(*t1[:6])
-		if d1 > d2:
-			requests.append(d1)
-			#ips.append(m[0])
-			ips[m[0]] += 1
+for f in filenames:
+	with open(f) as fi:
+		for line in fi:
+			m = map(''.join, re.findall(r'\"(.*?)\"|\[(.*?)\]|(\S+)', line))
+			if m != None:
+				t1 = time.strptime(m[3].split()[0], '%d/%b/%Y:%H:%M:%S')
+				d1 = datetime.datetime(*t1[:6])
+				if d1 > d2:
+					requests.append(d1)
+					ips[m[0]] += 1
 
 print "Total Unique IP Addresses Since", d2, " :   ", len(ips)
 print "Total Requests Since", d2, "            :   ", len(requests)
