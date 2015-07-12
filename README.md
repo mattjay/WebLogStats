@@ -1,7 +1,7 @@
-# apacheCounter.py
-Python script to parse through an Apache log file and return the number of requests and unique IPs in a given time period
+# Web Log Stats
+Python script to parse through a web log file and return the number of requests and unique IPs in a given time period
 
-It takes Apache log files via -f, the number of hours back you'd like to look -t (Default = 24 hours), and if you want the actual list of unique IPs -i or a list of the Top N most common IPs via -n
+It takes web (apache or nginx for now) log files via -f, the number of hours back you'd like to look -t (Default = 24 hours), and if you want the actual list of unique IPs -i or a list of the Top N most common IPs via -n
 
 Options:
 ```
