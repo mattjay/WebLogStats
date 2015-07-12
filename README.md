@@ -15,5 +15,5 @@ Options:
 
 Usage Examples:
 ```
-python apacheCounter.py -f "httpd-access.log"
-python apacheCounter.py -i -t 48 -n 10 -f "../path/to/httpd-access.log.0, ../path/to/httpd-access.log.1"
+python webStats.py -f "httpd-access.log"
+python webStats.py -i -t 48 -n 10 -f "../path/to/httpd-access.log.0, ../path/to/httpd-access.log.1"
